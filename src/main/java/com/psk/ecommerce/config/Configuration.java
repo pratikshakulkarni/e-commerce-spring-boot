@@ -1,7 +1,9 @@
 package com.psk.ecommerce.config;
 
+import com.psk.ecommerce.entity.Country;
 import com.psk.ecommerce.entity.Product;
 import com.psk.ecommerce.entity.ProductCategory;
+import com.psk.ecommerce.entity.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -28,17 +30,20 @@ public class Configuration implements RepositoryRestConfigurer {
 
         HttpMethod[] theUnSupportedActions = {HttpMethod.PUT,HttpMethod.POST,HttpMethod.DELETE};
 
-        config.getExposureConfiguration()
-                .forDomainType(Product.class)
-                .withItemExposure((metdata, httpMethods) -> httpMethods.disable(theUnSupportedActions))
-                .withCollectionExposure((metdata, httpMethods) -> httpMethods.disable(theUnSupportedActions));
+        disableHttpMethods(Product.class,config, theUnSupportedActions);
+        disableHttpMethods(ProductCategory.class,config, theUnSupportedActions);
+        disableHttpMethods(Country.class,config, theUnSupportedActions);
+        disableHttpMethods(State.class,config, theUnSupportedActions);
 
-        config.getExposureConfiguration()
-                .forDomainType(ProductCategory.class)
-                .withItemExposure((metdata, httpMethods) -> httpMethods.disable(theUnSupportedActions))
-                .withCollectionExposure((metdata, httpMethods) -> httpMethods.disable(theUnSupportedActions));
 
         exposeIds(config);
+    }
+
+    private void disableHttpMethods(Class theClass,RepositoryRestConfiguration config, HttpMethod[] theUnSupportedActions) {
+        config.getExposureConfiguration()
+                .forDomainType(theClass)
+                .withItemExposure((metdata, httpMethods) -> httpMethods.disable(theUnSupportedActions))
+                .withCollectionExposure((metdata, httpMethods) -> httpMethods.disable(theUnSupportedActions));
     }
 
     private void exposeIds(RepositoryRestConfiguration config) {
